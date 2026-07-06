@@ -60,3 +60,62 @@ export const runEvals = () =>
   });
 
 export const getEvalReport = () => request("/evals/report");
+
+// Profile & Log persistence endpoints
+export const listProfiles = () => request("/profiles");
+
+export const createProfile = (payload) => 
+  request("/profiles", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+
+export const getProfile = (userId) => request(`/profiles/${userId}`);
+
+export const logBodyMetric = (payload) => 
+  request("/logs/body", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+
+export const getBodyLogs = (userId) => request(`/logs/body/${userId}`);
+
+export const logWorkoutSet = (payload) => 
+  request("/logs/workouts", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+
+export const getWorkoutLogs = (userId) => request(`/logs/workouts/${userId}`);
+
+export const logNutritionTarget = (payload) => 
+  request("/logs/nutrition-targets", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+
+export const getLatestNutritionTarget = (userId) => request(`/logs/nutrition-targets/${userId}/latest`);
+
+export const logMeal = (payload) => 
+  request("/logs/meals", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+
+export const getMealLogs = (userId) => request(`/logs/meals/${userId}`);
+
+export const logSafetyFlag = (payload) => 
+  request("/logs/safety-flags", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+
+export const getOpenSafetyFlags = (userId) => request(`/logs/safety-flags/${userId}/open`);
+
+export const resolveSafetyFlag = (flagId) => 
+  request(`/logs/safety-flags/${flagId}/resolve`, {
+    method: "POST",
+  });
+
+export const getUserContext = (userId) => request(`/context/${userId}`);
+
