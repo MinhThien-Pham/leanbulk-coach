@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from backend.app.routes.health import router as health_router
 from backend.app.routes.demo import router as demo_router
 from backend.app.routes.tools import router as tools_router
@@ -24,6 +25,19 @@ def create_app(init_db_on_startup: bool = True) -> FastAPI:
         version="0.2.0",
         description="Deterministic lean bulk coaching backend.",
         lifespan=lifespan
+    )
+    
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=[
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+            "http://localhost:5174",
+            "http://127.0.0.1:5174",
+        ],
+        allow_credentials=False,
+        allow_methods=["GET", "POST", "OPTIONS"],
+        allow_headers=["*"],
     )
     
     app.include_router(health_router)
