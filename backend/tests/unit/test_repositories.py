@@ -46,6 +46,8 @@ async def test_user_profile_invalid(session):
         await create_user_profile(session, display_name="John", sex="male", age=0, height_cm=180.0)
     with pytest.raises(ValueError, match="height_cm must be > 0"):
         await create_user_profile(session, display_name="John", sex="male", age=25, height_cm=0)
+    with pytest.raises(ValueError, match="target_weight_kg must be > 0"):
+        await create_user_profile(session, display_name="John", sex="male", age=25, height_cm=180, target_weight_kg=0)
 
 @pytest.mark.asyncio
 async def test_body_metric_logs(session):
@@ -56,6 +58,8 @@ async def test_body_metric_logs(session):
         await add_body_metric_log(session, user_id=user.id, weight_kg=-5)
     with pytest.raises(ValueError, match="Invalid user_id"):
         await add_body_metric_log(session, user_id=999, weight_kg=75.0)
+    with pytest.raises(ValueError, match="waist_cm must be > 0"):
+        await add_body_metric_log(session, user_id=user.id, weight_kg=75.0, waist_cm=0)
         
     # Add metrics
     log1 = await add_body_metric_log(session, user_id=user.id, weight_kg=75.0)
@@ -78,6 +82,10 @@ async def test_workout_set_logs(session):
         await add_workout_set_log(session, user_id=user.id, exercise_name="Squat", reps=-1)
     with pytest.raises(ValueError, match="Invalid user_id"):
         await add_workout_set_log(session, user_id=999, exercise_name="Squat", reps=5)
+    with pytest.raises(ValueError, match="weight_kg cannot be negative"):
+        await add_workout_set_log(session, user_id=user.id, exercise_name="Squat", reps=5, weight_kg=-5)
+    with pytest.raises(ValueError, match="rir must be between 0 and 10"):
+        await add_workout_set_log(session, user_id=user.id, exercise_name="Squat", reps=5, rir=11)
         
     log1 = await add_workout_set_log(session, user_id=user.id, exercise_name="Squat", reps=5)
     log2 = await add_workout_set_log(session, user_id=user.id, exercise_name="Squat", reps=5)
@@ -106,8 +114,8 @@ async def test_nutrition_target_logs(session):
 async def test_meal_logs(session):
     user = await create_user_profile(session, display_name="John", sex="male", age=25, height_cm=180.0)
     
-    with pytest.raises(ValueError, match="kcal cannot be negative"):
-        await add_meal_log(session, user_id=user.id, meal_name="Chicken", kcal=-1, protein_g=30)
+    with pytest.raises(ValueError, match="kcal must be > 0"):
+        await add_meal_log(session, user_id=user.id, meal_name="Chicken", kcal=0, protein_g=30)
         
     with pytest.raises(ValueError, match="protein_g cannot be negative"):
         await add_meal_log(session, user_id=user.id, meal_name="Chicken", kcal=300, protein_g=-1)

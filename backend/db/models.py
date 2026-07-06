@@ -17,8 +17,8 @@ class UserProfile(Base):
     height_cm = Column(Float, nullable=False)
     goal = Column(String, nullable=False, default="lean_bulk")
     target_weight_kg = Column(Float, nullable=True)
-    created_at = Column(DateTime, default=now_utc)
-    updated_at = Column(DateTime, default=now_utc, onupdate=now_utc)
+    created_at = Column(DateTime(timezone=True), default=now_utc)
+    updated_at = Column(DateTime(timezone=True), default=now_utc, onupdate=now_utc)
     
     # Relationships
     body_metrics = relationship("BodyMetricLog", back_populates="user")
@@ -32,7 +32,7 @@ class BodyMetricLog(Base):
     
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('user_profiles.id'), nullable=False)
-    logged_at = Column(DateTime, default=now_utc, nullable=False)
+    logged_at = Column(DateTime(timezone=True), default=now_utc, nullable=False)
     weight_kg = Column(Float, nullable=False)
     waist_cm = Column(Float, nullable=True)
     notes = Column(String, nullable=True)
@@ -44,7 +44,7 @@ class WorkoutSetLog(Base):
     
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('user_profiles.id'), nullable=False)
-    logged_at = Column(DateTime, default=now_utc, nullable=False)
+    logged_at = Column(DateTime(timezone=True), default=now_utc, nullable=False)
     exercise_name = Column(String, nullable=False)
     muscle_group = Column(String, nullable=True)
     weight_kg = Column(Float, nullable=True)
@@ -60,7 +60,7 @@ class NutritionTargetLog(Base):
     
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('user_profiles.id'), nullable=False)
-    logged_at = Column(DateTime, default=now_utc, nullable=False)
+    logged_at = Column(DateTime(timezone=True), default=now_utc, nullable=False)
     target_kcal = Column(Integer, nullable=False)
     protein_g = Column(Integer, nullable=False)
     carbs_g = Column(Integer, nullable=True)
@@ -74,7 +74,7 @@ class MealLog(Base):
     
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('user_profiles.id'), nullable=False)
-    logged_at = Column(DateTime, default=now_utc, nullable=False)
+    logged_at = Column(DateTime(timezone=True), default=now_utc, nullable=False)
     meal_name = Column(String, nullable=False)
     kcal = Column(Integer, nullable=False)
     protein_g = Column(Integer, nullable=False)
@@ -89,7 +89,7 @@ class SafetyFlagLog(Base):
     
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('user_profiles.id'), nullable=False)
-    logged_at = Column(DateTime, default=now_utc, nullable=False)
+    logged_at = Column(DateTime(timezone=True), default=now_utc, nullable=False)
     flag_type = Column(String, nullable=False)
     severity = Column(String, nullable=False)
     message = Column(String, nullable=False)

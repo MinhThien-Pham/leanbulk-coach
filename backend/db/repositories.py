@@ -15,6 +15,8 @@ async def create_user_profile(
         raise ValueError("age must be > 0")
     if height_cm <= 0:
         raise ValueError("height_cm must be > 0")
+    if target_weight_kg is not None and target_weight_kg <= 0:
+        raise ValueError("target_weight_kg must be > 0")
         
     profile = UserProfile(
         display_name=display_name, sex=sex, age=age, height_cm=height_cm,
@@ -38,6 +40,8 @@ async def add_body_metric_log(
 ) -> BodyMetricLog:
     if weight_kg <= 0:
         raise ValueError("weight_kg must be > 0")
+    if waist_cm is not None and waist_cm <= 0:
+        raise ValueError("waist_cm must be > 0")
         
     if not await get_user_profile(session, user_id):
         raise ValueError(f"Invalid user_id: {user_id}")
@@ -75,6 +79,10 @@ async def add_workout_set_log(
 ) -> WorkoutSetLog:
     if reps < 0:
         raise ValueError("reps cannot be negative")
+    if weight_kg is not None and weight_kg < 0:
+        raise ValueError("weight_kg cannot be negative")
+    if rir is not None and not 0 <= rir <= 10:
+        raise ValueError("rir must be between 0 and 10")
         
     if not await get_user_profile(session, user_id):
         raise ValueError(f"Invalid user_id: {user_id}")
@@ -132,8 +140,8 @@ async def add_meal_log(
     session: AsyncSession, *, user_id, meal_name, kcal, protein_g, carbs_g=None, fat_g=None, 
     logged_at=None, notes=None
 ) -> MealLog:
-    if kcal < 0:
-        raise ValueError("kcal cannot be negative")
+    if kcal <= 0:
+        raise ValueError("kcal must be > 0")
     if protein_g < 0:
         raise ValueError("protein_g cannot be negative")
         

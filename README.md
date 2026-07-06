@@ -25,9 +25,9 @@ Currently, the core logic is powered by deterministic Python tools that handle a
 The project relies on deterministic tool testing with 100% coverage via `pytest`.
 ```bash
 pytest --tb=short -q
-pytest --cov=backend/tools --cov-report=term-missing -q
+pytest --cov=backend/tools --cov=backend/db --cov-report=term-missing -q
 ```
-**Current Status:** 193/193 tests passing with 100% coverage.
+**Current Status:** All deterministic tool and database tests passing with 100% coverage.
 
 ## ⚠️ Safety & Guardrails
 **Not Medical Advice:** LeanBulk Coach provides general fitness guidance and is not a substitute for professional medical advice, diagnosis, or treatment. It contains strict guardrails that block extreme calorie deficits/surpluses, flag unsafe rate-of-change trends (e.g. waist creep), and refuse medical diagnosis requests. Always consult a healthcare professional for medical issues.
