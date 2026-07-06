@@ -123,3 +123,29 @@ class SafetyFlagRequest(BaseModel):
     flag_type: str
     severity: str
     message: str
+
+class EvalCaseSummary(BaseModel):
+    id: str
+    category: str
+    description: str
+
+class EvalListResponse(BaseModel):
+    total: int
+    cases: list[EvalCaseSummary]
+
+class EvalSuiteResponse(BaseModel):
+    total: int
+    passed: int
+    failed: int
+    score: float
+    results: list[dict]
+
+class EvalReportSummary(BaseModel):
+    total: int
+    passed: int
+    failed: int
+    score: float
+
+class EvalReportResponse(BaseModel):
+    report: str
+    summary: EvalReportSummary

@@ -7,7 +7,6 @@ from backend.tools.trend_tools import weight_trend, waist_trend
 from backend.tools.safety_tools import check_calorie_adjustment, check_pain_flag
 from backend.workflows.demo_flow import run_local_demo_flow
 import asyncio
-from backend.app.main import create_app
 from fastapi.testclient import TestClient
 from backend.db.session import create_sqlite_async_engine, create_async_session_factory, init_db
 from backend.db.repositories import create_user_profile, add_body_metric_log
@@ -136,6 +135,7 @@ def run_api_case(case: EvalCase) -> tuple[dict, bool]:
     passed = False
     try:
         if case.id == "api_01":
+            from backend.app.main import create_app
             app = create_app(init_db_on_startup=False)
             with TestClient(app) as client:
                 h = client.get("/health")
@@ -199,5 +199,9 @@ def run_eval_suite(cases: list[EvalCase] | None = None) -> dict:
 
 if __name__ == "__main__":
     from backend.evals.reporting import format_eval_report
+    import sys
     res = run_eval_suite()
     print(format_eval_report(res))
+    if res["failed"] > 0:
+        sys.exit(1)
+    sys.exit(0)
