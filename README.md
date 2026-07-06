@@ -2,10 +2,10 @@
 
 LeanBulk Coach is a safe, adaptive fitness agent designed specifically for skinny-fat beginners. It helps users decide whether to lean bulk, maintain, mini-cut, or deload based on weekly bodyweight trends, waist measurements, training performance, and adherence.
 
-**Current Phase:** Phase 3C Complete (demo seed workflow)
+**Current Phase:** Phase 4A Complete (local Docker orchestration)
 
 ## Architecture Summary
-Currently, the core logic is powered by deterministic Python tools that handle all math (TDEE, protein targets, trend analysis, safety checks) safely and predictably. A local SQLite persistence layer has been added for data storage. The AgentConfig layer defines the root + 5 sub-agent roles. An ADK adapter can export a root ADK agent without live LLM calls in tests. An MCP read-only server exposes context tools safely. A local deterministic demo flow connects tools, DB, MCP context, and coaching summary. FastAPI exposes deterministic tool, demo, summary, persistence, context, and seed endpoints. A deterministic eval suite provides safety and quality regression testing, accessible through both the API and CLI. The React + Vite frontend supports onboarding profile creation, weekly check-ins, persisted body/workout/meal/safety logs, dashboard context view, the meal helper, and a deterministic sample-data seed workflow.
+Currently, the core logic is powered by deterministic Python tools that handle all math (TDEE, protein targets, trend analysis, safety checks) safely and predictably. A local SQLite persistence layer has been added for data storage. The AgentConfig layer defines the root + 5 sub-agent roles. An ADK adapter can export a root ADK agent without live LLM calls in tests. An MCP read-only server exposes context tools safely. A local deterministic demo flow connects tools, DB, MCP context, and coaching summary. FastAPI exposes deterministic tool, demo, summary, persistence, context, seed, and evaluation endpoints. A deterministic eval suite provides safety and quality regression testing, accessible through both the API and CLI. The React + Vite frontend supports onboarding profile creation, weekly check-ins, persisted body/workout/meal/safety logs, dashboard context view, the meal helper, a deterministic sample-data seed workflow, and a local Docker Compose development orchestration.
 
 ## Getting Started
 
@@ -21,7 +21,18 @@ Currently, the core logic is powered by deterministic Python tools that handle a
    pip install -r backend/requirements.txt
    ```
 
-### Running the Local API
+### Running with Docker Compose (Local Demo Only)
+To build and run the entire stack with a single command:
+```bash
+docker compose up --build
+```
+Once started, the application services will be available at:
+- Backend Health Check: `GET http://localhost:8000/health`
+- Frontend UI: `http://localhost:5173`
+
+*Note: The Docker Compose setup is strictly optimized for local development and review, and is not configured for production deployment.*
+
+### Running the Local API (Manually)
 You can run the FastAPI backend locally without an API key for deterministic endpoints:
 ```bash
 uvicorn backend.app.main:app --reload
@@ -29,7 +40,7 @@ uvicorn backend.app.main:app --reload
 You can hit the evaluation report endpoint at:
 `GET http://localhost:8000/evals/report`
 
-### Running the Frontend
+### Running the Frontend (Manually)
 ```bash
 cd frontend
 npm install
@@ -38,10 +49,9 @@ npm run dev
 Note: Set `VITE_API_BASE_URL` if the backend is not running at `http://localhost:8000`.
 
 ### 2-Minute Demo Workflow
-1. Start the Backend API.
-2. Start the Frontend Vite server.
-3. Open the Frontend, select the **Onboarding** tab, and click **Create Demo Profile** to seed a complete mock user history.
-4. Navigate to the **Dashboard**, **Meal Helper**, or **Dev Panel** to explore the seeded metrics, trend charts, next actions, safety flags, and evaluation reports.
+1. Start the services (either via Docker Compose or manually).
+2. Open the Frontend UI, select the **Onboarding** tab, and click **Create Demo Profile** to seed a complete mock user history.
+3. Navigate to the **Dashboard**, **Meal Helper**, or **Dev Panel** to explore the seeded metrics, trend charts, next actions, safety flags, and evaluation reports.
 
 ### Running the CLI Eval Report
 ```bash
