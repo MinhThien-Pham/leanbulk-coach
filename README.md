@@ -2,10 +2,10 @@
 
 LeanBulk Coach is a safe, adaptive fitness agent designed specifically for skinny-fat beginners. It helps users decide whether to lean bulk, maintain, mini-cut, or deload based on weekly bodyweight trends, waist measurements, training performance, and adherence.
 
-**Current Phase:** Phase 1A.1 Complete (Cleanup & Deterministic Tools)
+**Current Phase:** Phase 1B.1 Complete (SQLite persistence/local memory layer added)
 
 ## Architecture Summary
-Currently, the core logic is powered by deterministic Python tools that handle all math (TDEE, protein targets, trend analysis, safety checks) safely and predictably. Later phases will introduce a Google ADK root agent orchestrating several sub-agents, driven by an MCP read-only server and SQLite persistence.
+Currently, the core logic is powered by deterministic Python tools that handle all math (TDEE, protein targets, trend analysis, safety checks) safely and predictably. A local SQLite persistence layer has been added for data storage. Later phases will introduce a Google ADK root agent orchestrating several sub-agents, driven by an MCP read-only server.
 
 ## Getting Started
 
@@ -33,6 +33,6 @@ pytest --cov=backend/tools --cov-report=term-missing -q
 **Not Medical Advice:** LeanBulk Coach provides general fitness guidance and is not a substitute for professional medical advice, diagnosis, or treatment. It contains strict guardrails that block extreme calorie deficits/surpluses, flag unsafe rate-of-change trends (e.g. waist creep), and refuse medical diagnosis requests. Always consult a healthcare professional for medical issues.
 
 ## Roadmap
-- **Phase 1B:** Google ADK agents, MCP read-only server, SQLite persistence.
+- **Phase 1B.2:** Google ADK agents and MCP read-only server.
 - **Phase 2:** FastAPI backend and advanced evaluation harnesses.
 - **Phase 3:** React + Vite frontend and Docker Compose deployment.
