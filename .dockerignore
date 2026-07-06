@@ -1,0 +1,12 @@
+.git
+.venv
+__pycache__
+.pytest_cache
+.coverage
+htmlcov
+frontend/node_modules
+frontend/dist
+leanbulk_api.db
+data
+*.pyc
+.env
