@@ -67,3 +67,59 @@ class SummaryResponse(BaseModel):
     training_status: str
     nutrition_status: str
     next_actions: list[str]
+
+class CreateUserProfileRequest(BaseModel):
+    display_name: Optional[str] = None
+    sex: str
+    age: int
+    height_cm: float
+    goal: str = "lean_bulk"
+    target_weight_kg: Optional[float] = None
+
+class UserProfileResponse(BaseModel):
+    id: int
+    display_name: Optional[str] = None
+    sex: str
+    age: int
+    height_cm: float
+    goal: str
+    target_weight_kg: Optional[float] = None
+
+class BodyMetricLogRequest(BaseModel):
+    user_id: int
+    weight_kg: float
+    waist_cm: Optional[float] = None
+    notes: Optional[str] = None
+
+class WorkoutSetLogRequest(BaseModel):
+    user_id: int
+    exercise_name: str
+    reps: int
+    weight_kg: Optional[float] = None
+    rir: Optional[float] = None
+    muscle_group: Optional[str] = None
+    set_number: Optional[int] = None
+    notes: Optional[str] = None
+
+class NutritionTargetLogRequest(BaseModel):
+    user_id: int
+    target_kcal: int
+    protein_g: int
+    carbs_g: Optional[int] = None
+    fat_g: Optional[int] = None
+    goal: str = "lean_bulk"
+
+class MealLogRequest(BaseModel):
+    user_id: int
+    meal_name: str
+    kcal: int
+    protein_g: int
+    carbs_g: Optional[int] = None
+    fat_g: Optional[int] = None
+    notes: Optional[str] = None
+
+class SafetyFlagRequest(BaseModel):
+    user_id: int
+    flag_type: str
+    severity: str
+    message: str

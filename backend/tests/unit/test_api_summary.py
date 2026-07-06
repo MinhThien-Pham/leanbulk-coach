@@ -2,7 +2,7 @@ from fastapi.testclient import TestClient
 from backend.app.main import create_app
 
 def test_summary_normal():
-    app = create_app()
+    app = create_app(init_db_on_startup=False)
     client = TestClient(app)
     response = client.post("/summary/build", json={
         "profile_context": {"display_name": "Test User"},
@@ -14,7 +14,7 @@ def test_summary_normal():
     assert data["current_weight_kg"] == 75.0
 
 def test_summary_empty():
-    app = create_app()
+    app = create_app(init_db_on_startup=False)
     client = TestClient(app)
     response = client.post("/summary/build", json={})
     assert response.status_code == 200
