@@ -2,10 +2,10 @@
 
 LeanBulk Coach is a safe, adaptive fitness agent designed specifically for skinny-fat beginners. It helps users decide whether to lean bulk, maintain, mini-cut, or deload based on weekly bodyweight trends, waist measurements, training performance, and adherence.
 
-**Current Phase:** Phase 1C Complete (local end-to-end demo flow added)
+**Current Phase:** Phase 2A.1 Complete (FastAPI API shell + deterministic endpoints)
 
 ## Architecture Summary
-Currently, the core logic is powered by deterministic Python tools that handle all math (TDEE, protein targets, trend analysis, safety checks) safely and predictably. A local SQLite persistence layer has been added for data storage. The AgentConfig layer defines the root + 5 sub-agent roles. An ADK adapter can export a root ADK agent without live LLM calls in tests. An MCP read-only server exposes context tools safely. A local deterministic demo flow connects tools, DB, MCP context, and coaching summary.
+Currently, the core logic is powered by deterministic Python tools that handle all math (TDEE, protein targets, trend analysis, safety checks) safely and predictably. A local SQLite persistence layer has been added for data storage. The AgentConfig layer defines the root + 5 sub-agent roles. An ADK adapter can export a root ADK agent without live LLM calls in tests. An MCP read-only server exposes context tools safely. A local deterministic demo flow connects tools, DB, MCP context, and coaching summary. FastAPI exposes deterministic tool, demo, and summary endpoints.
 
 ## Getting Started
 
@@ -21,13 +21,19 @@ Currently, the core logic is powered by deterministic Python tools that handle a
    pip install -r backend/requirements.txt
    ```
 
+### Running the Local API
+You can run the FastAPI backend locally without an API key for deterministic endpoints:
+```bash
+uvicorn backend.app.main:app --reload
+```
+
 ### Running Tests
 The project relies on deterministic offline testing with high coverage via `pytest`.
 ```bash
 pytest --tb=short -q
-pytest --cov=backend/tools --cov=backend/db --cov=backend/agents --cov=backend/mcp_server --cov=backend/workflows --cov-report=term-missing -q
+pytest --cov=backend/tools --cov=backend/db --cov=backend/agents --cov=backend/mcp_server --cov=backend/workflows --cov=backend/app --cov-report=term-missing -q
 ```
-**Current Status:** All deterministic tool, database, agent structure, MCP context, and workflow tests are passing with high coverage. No live LLM calls in tests.
+**Current Status:** All deterministic tool, database, agent structure, MCP context, workflow, and API tests are passing with high coverage. No live LLM calls in tests.
 
 ## ⚠️ Safety & Guardrails
 **Not Medical Advice:** LeanBulk Coach provides general fitness guidance and is not a substitute for professional medical advice, diagnosis, or treatment. It contains strict guardrails that block extreme calorie deficits/surpluses, flag unsafe rate-of-change trends (e.g. waist creep), and refuse medical diagnosis requests. Always consult a healthcare professional for medical issues.
