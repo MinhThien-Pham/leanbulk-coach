@@ -1,0 +1,70 @@
+# ===========================================================================
+# LeanBulk Coach — Backend Dependencies
+# ===========================================================================
+# Versions verified against PyPI on 2026-07-05.
+# Use bounded version ranges for reproducibility. Use `pip install -r requirements.txt`
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+# Google ADK + LLM
+# ---------------------------------------------------------------------------
+# google-adk: Google Agent Development Kit. Latest stable is 2.3.0.
+# The installed system version (1.28.0) is also compatible.
+# Pinning to >=1.28.0,<3.0.0 to allow minor updates without breaking changes.
+google-adk>=1.28.0,<3.0.0
+
+# ---------------------------------------------------------------------------
+# MCP (Model Context Protocol)
+# ---------------------------------------------------------------------------
+# mcp: Python SDK for MCP. Latest stable 1.28.1. Installed: 1.26.0.
+# Used for the local stdio MCP server (read-only in MVP).
+mcp>=1.26.0,<2.0.0
+
+# ---------------------------------------------------------------------------
+# FastAPI stack
+# ---------------------------------------------------------------------------
+# fastapi: Latest stable 0.139.0. Installed: 0.135.2.
+fastapi>=0.135.2,<1.0.0
+
+# uvicorn: ASGI server. Latest stable 0.50.0.
+# [standard] includes httptools and websockets for production use.
+uvicorn[standard]>=0.34.0,<1.0.0
+
+# pydantic: v2 required by google-adk. Latest stable 2.13.4.
+# Provides schema validation for all API inputs and guardrail checks.
+pydantic>=2.11.0,<3.0.0
+
+# ---------------------------------------------------------------------------
+# Database
+# ---------------------------------------------------------------------------
+# sqlalchemy: Async-capable ORM. Latest stable 2.0.51.
+sqlalchemy>=2.0.41,<3.0.0
+
+# aiosqlite: Async SQLite driver required by SQLAlchemy async engine.
+# Latest stable 0.22.1.
+aiosqlite>=0.21.0,<1.0.0
+
+# ---------------------------------------------------------------------------
+# Utilities
+# ---------------------------------------------------------------------------
+# python-dotenv: Load .env files. Latest stable 1.2.2.
+python-dotenv>=1.1.1,<2.0.0
+
+# httpx: Async HTTP client for internal service calls. Latest stable 0.28.1.
+httpx>=0.28.0,<1.0.0
+
+# tenacity: Retry logic for LLM API calls (rate limits, transient errors).
+# Latest stable 9.1.4.
+tenacity>=9.1.0,<10.0.0
+
+# ---------------------------------------------------------------------------
+# Testing
+# ---------------------------------------------------------------------------
+# pytest: Test runner. Latest stable 9.1.1.
+pytest>=9.1.0,<10.0.0
+
+# pytest-asyncio: Async test support. Latest stable 1.4.0.
+pytest-asyncio>=1.4.0,<2.0.0
+
+# pytest-cov: Coverage reporting. Latest stable 7.1.0.
+pytest-cov>=7.0.0,<8.0.0
