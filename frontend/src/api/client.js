@@ -119,3 +119,8 @@ export const resolveSafetyFlag = (flagId) =>
 
 export const getUserContext = (userId) => request(`/context/${userId}`);
 
+export const createDemoProfile = () => 
+  request("/seed/demo-profile", {
+    method: "POST"
+  });
+

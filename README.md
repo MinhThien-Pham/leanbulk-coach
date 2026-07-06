@@ -2,10 +2,10 @@
 
 LeanBulk Coach is a safe, adaptive fitness agent designed specifically for skinny-fat beginners. It helps users decide whether to lean bulk, maintain, mini-cut, or deload based on weekly bodyweight trends, waist measurements, training performance, and adherence.
 
-**Current Phase:** Phase 3B Complete (frontend persistence workflow)
+**Current Phase:** Phase 3C Complete (demo seed workflow)
 
 ## Architecture Summary
-Currently, the core logic is powered by deterministic Python tools that handle all math (TDEE, protein targets, trend analysis, safety checks) safely and predictably. A local SQLite persistence layer has been added for data storage. The AgentConfig layer defines the root + 5 sub-agent roles. An ADK adapter can export a root ADK agent without live LLM calls in tests. An MCP read-only server exposes context tools safely. A local deterministic demo flow connects tools, DB, MCP context, and coaching summary. FastAPI exposes deterministic tool, demo, summary, persistence, and context endpoints. A deterministic eval suite provides safety and quality regression testing, accessible through both the API and CLI. The React + Vite frontend supports onboarding profile creation, weekly check-ins, persisted body/workout/meal/safety logs, dashboard context view, and the meal helper.
+Currently, the core logic is powered by deterministic Python tools that handle all math (TDEE, protein targets, trend analysis, safety checks) safely and predictably. A local SQLite persistence layer has been added for data storage. The AgentConfig layer defines the root + 5 sub-agent roles. An ADK adapter can export a root ADK agent without live LLM calls in tests. An MCP read-only server exposes context tools safely. A local deterministic demo flow connects tools, DB, MCP context, and coaching summary. FastAPI exposes deterministic tool, demo, summary, persistence, context, and seed endpoints. A deterministic eval suite provides safety and quality regression testing, accessible through both the API and CLI. The React + Vite frontend supports onboarding profile creation, weekly check-ins, persisted body/workout/meal/safety logs, dashboard context view, the meal helper, and a deterministic sample-data seed workflow.
 
 ## Getting Started
 
@@ -36,6 +36,12 @@ npm install
 npm run dev
 ```
 Note: Set `VITE_API_BASE_URL` if the backend is not running at `http://localhost:8000`.
+
+### 2-Minute Demo Workflow
+1. Start the Backend API.
+2. Start the Frontend Vite server.
+3. Open the Frontend, select the **Onboarding** tab, and click **Create Demo Profile** to seed a complete mock user history.
+4. Navigate to the **Dashboard**, **Meal Helper**, or **Dev Panel** to explore the seeded metrics, trend charts, next actions, safety flags, and evaluation reports.
 
 ### Running the CLI Eval Report
 ```bash

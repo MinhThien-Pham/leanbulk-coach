@@ -8,6 +8,7 @@ import OnboardingPanel from './components/OnboardingPanel';
 import CheckInPanel from './components/CheckInPanel';
 import DashboardPanel from './components/DashboardPanel';
 import MealHelperPanel from './components/MealHelperPanel';
+import DemoSeedPanel from './components/DemoSeedPanel';
 import './styles.css';
 
 function App() {
@@ -66,7 +67,10 @@ function App() {
       
       <main>
         {activeTab === 'onboarding' && (
-          <OnboardingPanel onProfileCreated={handleProfileCreated} />
+          <div className="onboarding-tab-wrapper" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <DemoSeedPanel onDemoCreated={handleProfileCreated} />
+            <OnboardingPanel onProfileCreated={handleProfileCreated} />
+          </div>
         )}
         
         {activeTab === 'checkin' && (
