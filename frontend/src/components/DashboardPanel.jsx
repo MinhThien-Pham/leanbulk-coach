@@ -40,6 +40,142 @@ const formatDate = (dateStr, short = false) => {
   return null;
 };
 
+function TrendLineChart({ logs, valueKey, title, unit }) {
+  if (!logs || logs.length === 0) {
+    return (
+      <div className="custom-chart-wrapper">
+        <h4>{title}</h4>
+        <p className="no-data">No logs recorded yet.</p>
+      </div>
+    );
+  }
+
+  // Sort and limit to last 7 logs
+  const sorted = [...logs].sort((a, b) => new Date(a.logged_at) - new Date(b.logged_at)).slice(-7);
+  
+  const values = sorted.map(log => log[valueKey]);
+  let minVal = Math.min(...values);
+  let maxVal = Math.max(...values);
+  
+  // padding / normalization
+  if (minVal === maxVal) {
+    minVal -= 1;
+    maxVal += 1;
+  } else {
+    const diff = maxVal - minVal;
+    const pad = diff * 0.15 > 0.1 ? diff * 0.15 : 0.2;
+    minVal -= pad;
+    maxVal += pad;
+  }
+  const range = maxVal - minVal;
+
+  // SVG dimensions
+  const width = 360;
+  const height = 180;
+  const paddingLeft = 40;
+  const paddingRight = 20;
+  const paddingTop = 30;
+  const paddingBottom = 40;
+
+  const chartWidth = width - paddingLeft - paddingRight;
+  const chartHeight = height - paddingTop - paddingBottom;
+
+  const getCoords = (index, value) => {
+    const x = paddingLeft + (sorted.length > 1 ? (index / (sorted.length - 1)) * chartWidth : chartWidth / 2);
+    const y = paddingTop + chartHeight - ((value - minVal) / range) * chartHeight;
+    return { x, y };
+  };
+
+  const points = sorted.map((log, i) => getCoords(i, log[valueKey]));
+  const polylinePointsStr = points.map(p => `${p.x},${p.y}`).join(' ');
+
+  return (
+    <div className="custom-chart-wrapper" style={{ minWidth: '320px' }}>
+      <h4 style={{ margin: '0 0 1rem 0', color: '#475569' }}>{title}</h4>
+      <div style={{ position: 'relative', width: '100%', height: `${height}px` }}>
+        <svg width="100%" height="100%" viewBox={`0 0 ${width} ${height}`}>
+          {/* Background Grid Lines (Horizontal) */}
+          {[0, 0.25, 0.5, 0.75, 1].map((ratio, idx) => {
+            const y = paddingTop + chartHeight * ratio;
+            const val = maxVal - range * ratio;
+            return (
+              <g key={idx}>
+                <line 
+                  x1={paddingLeft} 
+                  y1={y} 
+                  x2={width - paddingRight} 
+                  y2={y} 
+                  stroke="#e2e8f0" 
+                  strokeDasharray="4 4" 
+                />
+                <text 
+                  x={paddingLeft - 8} 
+                  y={y + 4} 
+                  fill="#64748b" 
+                  fontSize="10" 
+                  textAnchor="end"
+                >
+                  {val.toFixed(1)}
+                </text>
+              </g>
+            );
+          })}
+
+          {/* Connecting Line */}
+          {points.length > 1 && (
+            <polyline
+              fill="none"
+              stroke="#2563eb"
+              strokeWidth="3"
+              points={polylinePointsStr}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          )}
+
+          {/* Data points (dots & labels) */}
+          {sorted.map((log, i) => {
+            const { x, y } = points[i];
+            const val = log[valueKey];
+            const dateLabel = formatDate(log.logged_at, true) || `Day ${i + 1}`;
+            return (
+              <g key={i}>
+                <circle
+                  cx={x}
+                  cy={y}
+                  r="5"
+                  fill="#2563eb"
+                  stroke="#ffffff"
+                  strokeWidth="2"
+                />
+                <text
+                  x={x}
+                  y={y - 10}
+                  fill="#0f172a"
+                  fontSize="10"
+                  fontWeight="bold"
+                  textAnchor="middle"
+                >
+                  {val.toFixed(1)}
+                </text>
+                <text
+                  x={x}
+                  y={height - 12}
+                  fill="#64748b"
+                  fontSize="10"
+                  textAnchor="middle"
+                >
+                  {dateLabel}
+                </text>
+              </g>
+            );
+          })}
+        </svg>
+      </div>
+    </div>
+  );
+}
+
 export default function DashboardPanel({ initialUserId }) {
   const [profiles, setProfiles] = useState([]);
   const [userId, setUserId] = useState(initialUserId || '');
@@ -125,68 +261,27 @@ export default function DashboardPanel({ initialUserId }) {
     }
   };
 
-  // Custom Chart Renderers (CSS based, no library)
+  // Custom Chart Renderers using plain React + SVG TrendLineChart
   const renderWeightChart = () => {
-    if (bodyLogs.length === 0) return <p className="no-data">No weight logs logged yet.</p>;
-
-    // Sort by date chronological
-    const sorted = [...bodyLogs].sort((a,b) => new Date(a.logged_at) - new Date(b.logged_at));
-    const weights = sorted.map(x => x.weight_kg);
-    const minW = Math.min(...weights) - 2;
-    const maxW = Math.max(...weights) + 2;
-    const range = maxW - minW || 10;
-
     return (
-      <div className="custom-chart-wrapper">
-        <h4>Weight Trend (kg)</h4>
-        <div className="bar-chart">
-          {sorted.slice(-8).map((log, i) => {
-            const heightPct = ((log.weight_kg - minW) / range) * 100;
-            return (
-              <div className="chart-bar-container" key={i}>
-                <span className="bar-value">{log.weight_kg.toFixed(1)}</span>
-                <div 
-                  className="chart-bar weight-bar" 
-                  style={{ height: `${Math.max(heightPct, 15)}%` }} 
-                />
-                <span className="bar-label">{formatDate(log.logged_at, true) || `Day ${i + 1}`}</span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+      <TrendLineChart 
+        logs={bodyLogs} 
+        valueKey="weight_kg" 
+        title="Weight Trend (kg)" 
+        unit="kg" 
+      />
     );
   };
 
   const renderWaistChart = () => {
     const validLogs = bodyLogs.filter(x => x.waist_cm !== null);
-    if (validLogs.length === 0) return <p className="no-data">No waist circumference logs logged yet.</p>;
-
-    const sorted = [...validLogs].sort((a,b) => new Date(a.logged_at) - new Date(b.logged_at));
-    const waists = sorted.map(x => x.waist_cm);
-    const minW = Math.min(...waists) - 2;
-    const maxW = Math.max(...waists) + 2;
-    const range = maxW - minW || 10;
-
     return (
-      <div className="custom-chart-wrapper">
-        <h4>Waist Circumference Trend (cm)</h4>
-        <div className="bar-chart">
-          {sorted.slice(-8).map((log, i) => {
-            const heightPct = ((log.waist_cm - minW) / range) * 100;
-            return (
-              <div className="chart-bar-container" key={i}>
-                <span className="bar-value">{log.waist_cm.toFixed(1)}</span>
-                <div 
-                  className="chart-bar waist-bar" 
-                  style={{ height: `${Math.max(heightPct, 15)}%` }} 
-                />
-                <span className="bar-label">{formatDate(log.logged_at, true) || `Day ${i + 1}`}</span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+      <TrendLineChart 
+        logs={validLogs} 
+        valueKey="waist_cm" 
+        title="Waist Circumference Trend (cm)" 
+        unit="cm" 
+      />
     );
   };
 
