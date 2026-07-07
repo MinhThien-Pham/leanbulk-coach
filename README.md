@@ -77,6 +77,30 @@ Once started:
 
 ---
 
+## Demo Screenshots
+
+### Local Demo Dashboard
+
+![LeanBulk Coach dashboard](docs/assets/01-dashboard-context.png)
+
+### Safety Guardrail
+
+![Safety guardrail](docs/assets/02-safety-guardrail.png)
+
+### Evaluation Suite
+
+![Evaluation suite passing](docs/assets/03-eval-suite.png)
+
+### Meal Helper
+
+![Meal helper suggestions](docs/assets/04-meal-helper.png)
+
+### CI Quality Gates
+
+![GitHub Actions passing](docs/assets/06-ci-pass.png)
+
+---
+
 ## Manual Local Development
 
 ### 1. Backend Setup
