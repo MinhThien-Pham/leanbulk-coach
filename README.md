@@ -2,75 +2,170 @@
 
 [![LeanBulk Coach CI](https://github.com/MinhThien-Pham/leanbulk-coach/actions/workflows/ci.yml/badge.svg)](https://github.com/MinhThien-Pham/leanbulk-coach/actions/workflows/ci.yml)
 
-LeanBulk Coach is a safe, adaptive fitness agent designed specifically for skinny-fat beginners. It helps users decide whether to lean bulk, maintain, mini-cut, or deload based on weekly bodyweight trends, waist measurements, training performance, and adherence.
+LeanBulk Coach is an offline-first, safety-oriented coaching assistant designed to guide skinny-fat beginners through body recomposition. By leveraging deterministic logic, local SQLite persistence, FastAPI, and a React frontend, it calculates nutritional targets, monitors weight trends, and flags physical pain signals—offering structured, rule-based feedback without requiring live LLM calls, external APIs, or billing accounts.
 
-**Current Phase:** Phase 4B Complete (CI quality gates)
+---
 
-## Architecture Summary
-Currently, the core logic is powered by deterministic Python tools that handle all math (TDEE, protein targets, trend analysis, safety checks) safely and predictably. A local SQLite persistence layer has been added for data storage. The AgentConfig layer defines the root + 5 sub-agent roles. An ADK adapter can export a root ADK agent without live LLM calls in tests. An MCP read-only server exposes context tools safely. A local deterministic demo flow connects tools, DB, MCP context, and coaching summary. FastAPI exposes deterministic tool, demo, summary, persistence, context, seed, and evaluation endpoints. A deterministic eval suite provides safety and quality regression testing, accessible through both the API and CLI. The React + Vite frontend supports onboarding profile creation, weekly check-ins, persisted body/workout/meal/safety logs, dashboard context view, the meal helper, a deterministic sample-data seed workflow, a local Docker Compose development orchestration, and a GitHub Actions CI quality gate verifying all backend tests, coverage, evaluation metrics, frontend builds, and compose setups.
+## The Problem
 
-## Getting Started
+Skinny-fat beginners start with excess body fat and minimal muscle mass, making typical bulk/cut advice confusing and counterproductive. They need highly personalized, weekly adaptivity that balances safety limits and adherence. LeanBulk Coach improves safety through rule-based guardrails, replacing unpredictable LLM recommendations with a robust, deterministic coaching workflow.
 
-### Installation
-1. Ensure you have Python 3.11+ installed.
-2. Create and activate a virtual environment:
-   ```bash
-   python -m venv .venv
-   source .venv/bin/activate  # On Windows: .\.venv\Scripts\Activate.ps1
-   ```
-3. Install dependencies:
-   ```bash
-   pip install -r backend/requirements.txt
-   ```
+---
 
-### Running with Docker Compose (Local Demo Only)
-To build and run the entire stack with a single command:
+## Core Features
+
+- **Deterministic Calculators:** Precise, side-effect-free math formulas for calorie maintenance, surpluses, deficits, and protein targets.
+- **SQLite Persistence:** Async database operations storing user profiles, bodyweight metrics, workout set history, meal macros, and active safety alerts.
+- **FastAPI Backend:** Clean, local-only routes mapping persisting inputs, context assemblers, and evaluation runner tasks.
+- **React Frontend:** A tabbed, plain-ASCII dashboard supporting intake forms, check-ins, custom CSS trend charts (no external library dependencies), and a meal suggestion helper.
+- **MCP Context Server:** Read-only Model Context Protocol context layer exposing profile, body, nutrition, workout, meal, safety, and progress context.
+- **ADK Agent Configuration:** Built-in ADK configuration templates defining root and sub-agent roles.
+- **Deterministic Eval Suite:** 12 check-in scenario integration tests verifying progress rules and safety overrides (100% pass score).
+- **Demo Seed Workflow:** Create a complete, realistic historical profile with one click to test the full dashboard features instantly.
+- **Local Docker Compose:** Spin up the complete frontend, database, and backend service stack with a single command.
+- **GitHub Actions CI:** Quality gate checking unit tests, statement coverage, evaluation score, frontend compilation, and compose setup validation.
+
+---
+
+## Architecture at a Glance
+
+```
+  +-------------------------------------------------------+
+  |                    React Frontend                     |
+  | (Onboarding, Check-In, Dashboard, Meal Helper, Evals) |
+  +-------------------------------------------------------+
+                              |
+                         (HTTP APIs)
+                              v
+  +-------------------------------------------------------+
+  |                      FastAPI API                      |
+  |     (/profiles, /logs, /context, /summary, /seed)     |
+  +-------------------------------------------------------+
+                              |
+            +-----------------+-----------------+
+            v                                   v
+  +-------------------+               +-------------------+
+  |    MCP Server     |               |  Coaching Rules   |
+  |  (Read-only       |               | & Workflows (Seed |
+  |   context tools)  |               |  data, evals)     |
+  +-------------------+               +-------------------+
+            |                                   |
+            v                                   v
+  +-------------------+               +-------------------+
+  |  SQLite Database  |               |  Deterministic    |
+  | (SQLAlchemy/Async)|               |    Math Tools     |
+  +-------------------+               +-------------------+
+```
+
+---
+
+## Quick Start (Docker Compose)
+
+Review the full application in under 2 minutes:
 ```bash
 docker compose up --build
 ```
-Once started, the application services will be available at:
-- Backend Health Check: `GET http://localhost:8000/health`
-- Frontend UI: `http://localhost:5173`
+Once started:
+- **Frontend Dashboard:** [http://localhost:5173](http://localhost:5173)
+- **Backend Health Check:** [http://localhost:8000/health](http://localhost:8000/health)
 
-*Note: The Docker Compose setup is strictly optimized for local development and review, and is not configured for production deployment.*
+1. Open the frontend and select the **Onboarding** tab.
+2. Click **Create Demo Profile** to seed a complete mock history.
+3. Explore the populated charts and resolve safety flags in the **Dashboard**!
 
-### Running the Local API (Manually)
-You can run the FastAPI backend locally without an API key for deterministic endpoints:
+*Note: The Docker Compose configuration is for local demo and evaluation purposes only, not production deployment.*
+
+---
+
+## Manual Local Development
+
+### 1. Backend Setup
+Activate your virtual environment and install requirements:
 ```bash
+pip install -r backend/requirements.txt
 uvicorn backend.app.main:app --reload
 ```
-You can hit the evaluation report endpoint at:
-`GET http://localhost:8000/evals/report`
+The local API is served at `http://localhost:8000`. Open `/docs` for the interactive Swagger UI.
 
-### Running the Frontend (Manually)
+### 2. Frontend Setup
+Navigate to the frontend folder, install packages, and spin up the Vite development server:
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-Note: Set `VITE_API_BASE_URL` if the backend is not running at `http://localhost:8000`.
+Open [http://localhost:5173](http://localhost:5173) in your browser.
 
-### 2-Minute Demo Workflow
-1. Start the services (either via Docker Compose or manually).
-2. Open the Frontend UI, select the **Onboarding** tab, and click **Create Demo Profile** to seed a complete mock user history.
-3. Navigate to the **Dashboard**, **Meal Helper**, or **Dev Panel** to explore the seeded metrics, trend charts, next actions, safety flags, and evaluation reports.
+---
 
-### Running the CLI Eval Report
+## Verification Commands
+
+To run all backend tests, coverage, and compilation builds:
 ```bash
-python -m backend.evals.runner
-```
-
-### Running Tests
-The project relies on deterministic offline testing with high coverage via `pytest`.
-```bash
+# Run backend tests
 pytest --tb=short -q
+
+# Run coverage report
 pytest --cov=backend/tools --cov=backend/db --cov=backend/agents --cov=backend/mcp_server --cov=backend/workflows --cov=backend/app --cov=backend/evals --cov-report=term-missing -q
+
+# Run evaluation runner CLI
+python -m backend.evals.runner
+
+# Build frontend production bundle
+cd frontend && npm run build
+
+# Validate Docker Compose configuration
+docker compose config
+docker compose build
 ```
-**Current Status:** All deterministic tool, database, agent structure, MCP context, workflow, persistence API, and evaluation API tests are passing with high coverage. No live LLM calls in tests.
 
-## ⚠️ Safety & Guardrails
-**Not Medical Advice:** LeanBulk Coach provides general fitness guidance and is not a substitute for professional medical advice, diagnosis, or treatment. It contains strict guardrails that block extreme calorie deficits/surpluses, flag unsafe rate-of-change trends (e.g. waist creep), and refuse medical diagnosis requests. Always consult a healthcare professional for medical issues.
+---
 
-## Roadmap
-- **Phase 2:** FastAPI backend and advanced evaluation harnesses.
-- **Phase 3:** React + Vite frontend and Docker Compose deployment.
+## Safety & Limitations
+
+- **Not Medical Advice:** LeanBulk Coach provides general guidance. It includes strict guardrails that restrict calorie targets, warn against waist creep, and log safety flags during knee pain symptoms.
+- **Offline & No Auth:** This MVP focuses strictly on local demonstration; there is no security auth layer or production cloud deployment config.
+- **No Live LLM Required:** All calculations and decision metrics run offline using deterministic tools, enforcing deterministic guardrails against model hallucinations.
+
+---
+
+## Repository Structure
+
+```
+leanbulk-coach/
+├── .github/workflows/ci.yml           # GitHub Actions CI workflow
+├── backend/
+│   ├── agents/                        # ADK agent configurations and Tool registry
+│   ├── app/                           # FastAPI routers, schemas, and API lifespans
+│   ├── db/                            # SQLAlchemy models, SQLite session makers, repositories
+│   ├── evals/                         # Deterministic eval runner, case specs, reporting
+│   ├── mcp_server/                    # Read-only Model Context Protocol router and server
+│   ├── tools/                         # Pure deterministic functions (calorie/safety/trend math)
+│   └── workflows/                     # Local demo flow and demo seeding workflows
+├── docs/                              # Project documentation
+│   ├── API_EXAMPLES.md                # Endpoint cURL examples
+│   ├── ARCHITECTURE_OVERVIEW.md       # Detailed system design
+│   ├── DEMO_GUIDE.md                  # Step-by-step 2-minute review walkthrough
+│   └── TROUBLESHOOTING.md             # Common setup issue fixes
+├── frontend/                          # React + Vite application
+│   ├── src/
+│   │   ├── api/                       # API fetch client
+│   │   └── components/                # Onboarding, check-in, dashboard panels
+│   └── index.html                     # HTML root template
+├── specs/                             # Product and architecture specifications
+│   ├── DEMO_SCRIPT.md                 # Detailed demonstration steps
+│   └── SECURITY_GUARDRAILS.md         # Safety constraints reference
+├── Dockerfile.backend                 # Backend service image manifest
+├── Dockerfile.frontend                # Frontend service image manifest
+└── docker-compose.yml                 # Local dev stack orchestration manifest
+```
+
+---
+
+## Documentation Links
+
+For deeper evaluation, please check the following documents:
+- [Demo Guide](docs/DEMO_GUIDE.md) - Complete walkthrough steps
+- [API Examples](docs/API_EXAMPLES.md) - cURL payloads reference
+- [Architecture Overview](docs/ARCHITECTURE_OVERVIEW.md) - Component design details
+- [Troubleshooting Guide](docs/TROUBLESHOOTING.md) - Common port or configuration fixes
