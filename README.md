@@ -77,6 +77,10 @@ Once started:
 
 ---
 
+## Demo Video
+
+Watch the project walkthrough: [LeanBulk Coach Demo](https://www.youtube.com/watch?v=xdDQN0ny-0w)
+
 ## Demo Screenshots
 
 ### Local Demo Dashboard
