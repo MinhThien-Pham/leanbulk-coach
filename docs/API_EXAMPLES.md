@@ -214,24 +214,27 @@ curl -X POST -H "Content-Type: application/json" -d '{
 {
   "suggestions": [
     {
-      "name": "High-Protein Greek Yogurt Bowl",
+      "name": "Greek Yogurt Protein Bowl",
       "kcal": 380,
-      "protein": 32,
-      "carbs": 25,
-      "fat": 8,
-      "recipe": "Mix 250g Greek yogurt with 1 scoop vanilla protein powder. Top with berries and honey.",
-      "equipment": ["none"]
+      "protein_g": 35,
+      "tags": ["no_cook", "dairy", "high_protein", "breakfast", "vegetarian", "snack"],
+      "equipment": ["none"],
+      "description": "200g Greek yogurt, 30g whey protein mixed in, mixed berries, 1 tbsp honey, 30g low-sugar granola."
     },
     {
-      "name": "Peanut Butter Oats Shake",
-      "kcal": 550,
-      "protein": 38,
-      "carbs": 45,
-      "fat": 15,
-      "recipe": "Blend 1 scoop chocolate protein powder, 40g oats, 15g peanut butter, and 300ml milk.",
-      "equipment": ["blender"]
+      "name": "Protein Smoothie",
+      "kcal": 350,
+      "protein_g": 30,
+      "tags": ["no_cook", "dairy", "vegetarian", "breakfast", "snack", "high_protein"],
+      "equipment": ["blender"],
+      "description": "1 scoop whey protein, 1 banana, 250ml semi-skimmed milk, 1 tbsp peanut butter, ice."
     }
   ],
+  "total_suggested_kcal": 730,
+  "total_suggested_protein_g": 65,
+  "remaining_kcal": 600,
+  "remaining_protein_g": 40,
+  "n_returned": 2,
   "fallback_used": false
 }
 ```

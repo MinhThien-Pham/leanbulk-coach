@@ -9,14 +9,14 @@ If code and docs disagree, fix the disagreement immediately — do not let drift
 
 | Layer | Technology | Notes |
 |---|---|---|
-| Agent framework | Google ADK (latest stable) | root agent + 5 sub-agents |
-| LLM | Gemini (model via `GEMINI_MODEL` env var) | Never hardcode a model name |
+| Agent framework | Google ADK (latest stable) | root agent + 5 sub-agents (compatibility config layer) |
+| LLM | None required for demo | Current demo runs offline and deterministically |
 | Backend | FastAPI + Uvicorn | Python 3.11+ |
 | Database | SQLite via SQLAlchemy async | aiosqlite driver |
-| MCP | `mcp` Python SDK (stdio transport) | Read-only in MVP |
-| Frontend | React + Vite | Phase 3 only |
+| MCP | `mcp` Python SDK (stdio transport) | Read-only context tools in MVP |
+| Frontend | React + Vite | Dashboard, check-in, meal helper, dev panel |
 | Testing | pytest + pytest-asyncio | All deterministic tools must have 100% coverage |
-| Eval | ADK-native eval files + pytest | See specs/EVAL_PLAN.md |
+| Eval | Deterministic eval runner + pytest | See specs/EVAL_PLAN.md |
 | Containers | Docker + docker-compose | Primary delivery artifact |
 
 ---
@@ -27,17 +27,17 @@ If code and docs disagree, fix the disagreement immediately — do not let drift
 leanbulk-coach/
 ├── .agents/skills/lean-bulk-coaching/   # Agent skill (SKILL.md + references/)
 ├── backend/
-│   ├── agent/          # ADK root agent + sub-agents + prompts + memory
-│   ├── mcp/            # MCP server, resources, tools
-│   ├── api/            # FastAPI routers, schemas, middleware
-│   ├── db/             # SQLAlchemy models, migrations
-│   ├── tools/          # Deterministic Python tools (no LLM)
-│   ├── knowledge_base/ # coaching_rules.json, safe_rate_tables.json
-│   ├── evals/          # ADK eval cases, fixtures
-│   └── tests/          # pytest unit + integration tests
-├── specs/              # Product spec, architecture, eval plan, security, demo script
-├── frontend/           # React + Vite (Phase 3)
-├── .env.example        # Template — never commit real secrets
+│   ├── agents/         # ADK root agent config + sub-agent configurations
+│   ├── mcp_server/     # Read-only Model Context Protocol context tools
+│   ├── app/            # FastAPI routes, schemas, and app configuration
+│   ├── db/             # SQLAlchemy models, sessions, and repositories
+│   ├── tools/          # Deterministic Python tools (pure functions, no LLM)
+│   ├── workflows/      # Local demo flow and database seeding logic
+│   ├── evals/          # Regression evaluation cases and reporting
+│   └── tests/          # pytest unit + API integration tests
+├── specs/              # Product spec, security, and demo scripts
+├── frontend/           # React + Vite dashboard
+├── .env.example        # Local demo configuration template
 ├── AGENTS.md           # This file
 └── README.md
 ```
@@ -64,13 +64,12 @@ leanbulk-coach/
 
 ### Imports
 - Absolute imports from `backend.*` package root.
-- No circular imports. Tools never import from agent/.
+- No circular imports. Tools never import from agents/.
 
 ### Configuration
-- All secrets and tuneable parameters come from environment variables.
-- Load env vars with `python-dotenv` in a single `backend/config.py` module.
-- `.env.example` is the canonical list of all required env vars.
-- **Never hardcode API keys, model names, or database paths in source code.**
+- Secret management is not required for the current offline demo.
+- Runtime configuration is minimal and handled by the app/Docker environment.
+- `.env.example` lists local database and port configurations.
 
 ---
 
@@ -78,43 +77,17 @@ leanbulk-coach/
 
 1. **No medical diagnosis.** The agent MUST refuse to diagnose injuries, symptoms, or medical conditions. See `specs/SECURITY_GUARDRAILS.md`.
 2. **No extreme dieting.** Never recommend a deficit > 500 kcal/day or a surplus > 600 kcal/day.
-3. **No hardcoded model names.** Always read `GEMINI_MODEL` from environment.
-4. **No secrets in code.** API keys, tokens, passwords live in `.env` only. `.env` is gitignored.
-5. **MCP is read-only.** `db_query_tool` and `rules_lookup_tool` are the only MCP tools. No write/update/delete MCP operations in MVP.
-6. **Safety check before decision.** `safety_tools` must be called before any `DecisionAgent` output.
+3. **No required live LLM for demo.** The active demo is fully offline and deterministic.
+4. **No secrets in code.** Local runs operate fully offline without external API keys or tokens.
+5. **MCP is read-only.** The MCP server exposes only read-only context tools (profile, body, nutrition, workout, meal, safety, and progress context). No write/update/delete MCP operations in MVP.
+6. **Safety check before decision.** `safety_tools` must be called before any coaching summary is generated.
 7. **Docs and code must agree.** If you change behavior that contradicts `specs/`, update the spec in the same commit.
 8. **All deterministic tools must have pytest tests.** No exceptions.
 
 ---
 
-## Workflow
-
-### Phase 1A — Foundation (Current)
-- Deterministic tools + unit tests
-- Spec documents
-- `.env.example`, `.gitignore`, `requirements.txt`
-- Agent Skill (`SKILL.md`)
-
-### Phase 1B — Agent + MCP
-- ADK root agent + 5 sub-agents
-- MCP server (read-only)
-- SQLite DB models + migrations
-- Memory layer
-
-### Phase 2 — API + Eval
-- FastAPI routers + guardrail middleware
-- ADK eval cases (final output + tool trajectory)
-- Docker + docker-compose
-
-### Phase 3 — Frontend
-- React + Vite UI
-- Onboarding, check-in, dashboard, meal helper pages
-
----
-
 ## Safety Rules (Summary — full detail in specs/SECURITY_GUARDRAILS.md)
 
-- Every coaching output must include the medical disclaimer.
 - `safety_tools.check_pain_flag()` runs before any training advice.
 - `safety_tools.check_rate_of_change()` runs before any decision output.
 - Calorie floor: 1400 kcal/day absolute minimum.
@@ -127,17 +100,20 @@ leanbulk-coach/
 
 ## Running Tests
 
+No environment variables or API keys are required to run tests or evals.
+
 ```bash
-# Unit tests (deterministic tools only — no env vars required)
+# Unit tests
 pytest backend/tests/unit/ -v
 
 # With coverage
 pytest backend/tests/unit/ -v --cov=backend/tools --cov-report=term-missing
 ```
 
-## Running the Agent (Phase 1B+)
+## Running the Demo Backend
+
+To start the API server locally:
 
 ```bash
-# Requires .env with GEMINI_API_KEY and GEMINI_MODEL set
-uvicorn backend.api.main:app --reload --port 8000
+uvicorn backend.app.main:app --reload --port 8000
 ```
