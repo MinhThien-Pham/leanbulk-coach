@@ -1,11 +1,13 @@
 # LeanBulk Coach
 
+[![LeanBulk Coach CI](https://github.com/MinhThien-Pham/leanbulk-coach/actions/workflows/ci.yml/badge.svg)](https://github.com/MinhThien-Pham/leanbulk-coach/actions/workflows/ci.yml)
+
 LeanBulk Coach is a safe, adaptive fitness agent designed specifically for skinny-fat beginners. It helps users decide whether to lean bulk, maintain, mini-cut, or deload based on weekly bodyweight trends, waist measurements, training performance, and adherence.
 
-**Current Phase:** Phase 4A Complete (local Docker orchestration)
+**Current Phase:** Phase 4B Complete (CI quality gates)
 
 ## Architecture Summary
-Currently, the core logic is powered by deterministic Python tools that handle all math (TDEE, protein targets, trend analysis, safety checks) safely and predictably. A local SQLite persistence layer has been added for data storage. The AgentConfig layer defines the root + 5 sub-agent roles. An ADK adapter can export a root ADK agent without live LLM calls in tests. An MCP read-only server exposes context tools safely. A local deterministic demo flow connects tools, DB, MCP context, and coaching summary. FastAPI exposes deterministic tool, demo, summary, persistence, context, seed, and evaluation endpoints. A deterministic eval suite provides safety and quality regression testing, accessible through both the API and CLI. The React + Vite frontend supports onboarding profile creation, weekly check-ins, persisted body/workout/meal/safety logs, dashboard context view, the meal helper, a deterministic sample-data seed workflow, and a local Docker Compose development orchestration.
+Currently, the core logic is powered by deterministic Python tools that handle all math (TDEE, protein targets, trend analysis, safety checks) safely and predictably. A local SQLite persistence layer has been added for data storage. The AgentConfig layer defines the root + 5 sub-agent roles. An ADK adapter can export a root ADK agent without live LLM calls in tests. An MCP read-only server exposes context tools safely. A local deterministic demo flow connects tools, DB, MCP context, and coaching summary. FastAPI exposes deterministic tool, demo, summary, persistence, context, seed, and evaluation endpoints. A deterministic eval suite provides safety and quality regression testing, accessible through both the API and CLI. The React + Vite frontend supports onboarding profile creation, weekly check-ins, persisted body/workout/meal/safety logs, dashboard context view, the meal helper, a deterministic sample-data seed workflow, a local Docker Compose development orchestration, and a GitHub Actions CI quality gate verifying all backend tests, coverage, evaluation metrics, frontend builds, and compose setups.
 
 ## Getting Started
 
