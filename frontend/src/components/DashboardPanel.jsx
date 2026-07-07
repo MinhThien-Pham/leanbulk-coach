@@ -11,6 +11,35 @@ import {
   getProfile
 } from '../api/client';
 
+const formatEnumLabel = (val) => {
+  if (!val) return '';
+  const key = String(val).toLowerCase();
+  const mapping = {
+    'attention_needed': 'Attention Needed',
+    'clear': 'Clear',
+    'lean_bulk': 'Lean Bulk',
+    'pain_flag': 'Pain Flag',
+    'medium': 'Medium',
+    'high': 'High',
+    'low': 'Low',
+    'maintain': 'Maintain',
+    'mini_cut': 'Mini Cut'
+  };
+  return mapping[key] || val;
+};
+
+const formatDate = (dateStr, short = false) => {
+  if (!dateStr) return null;
+  const d = new Date(dateStr);
+  if (d instanceof Date && !isNaN(d.getTime())) {
+    if (short) {
+      return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    }
+    return d.toLocaleDateString();
+  }
+  return null;
+};
+
 export default function DashboardPanel({ initialUserId }) {
   const [profiles, setProfiles] = useState([]);
   const [userId, setUserId] = useState(initialUserId || '');
@@ -120,7 +149,7 @@ export default function DashboardPanel({ initialUserId }) {
                   className="chart-bar weight-bar" 
                   style={{ height: `${Math.max(heightPct, 15)}%` }} 
                 />
-                <span className="bar-label">{new Date(log.logged_at).toLocaleDateString([], {month:'short', day:'numeric'})}</span>
+                <span className="bar-label">{formatDate(log.logged_at, true) || `Day ${i + 1}`}</span>
               </div>
             );
           })}
@@ -152,7 +181,7 @@ export default function DashboardPanel({ initialUserId }) {
                   className="chart-bar waist-bar" 
                   style={{ height: `${Math.max(heightPct, 15)}%` }} 
                 />
-                <span className="bar-label">{new Date(log.logged_at).toLocaleDateString([], {month:'short', day:'numeric'})}</span>
+                <span className="bar-label">{formatDate(log.logged_at, true) || `Day ${i + 1}`}</span>
               </div>
             );
           })}
@@ -175,7 +204,7 @@ export default function DashboardPanel({ initialUserId }) {
             <option value="">-- Choose Profile --</option>
             {profiles.map(p => (
               <option key={p.id} value={p.id}>
-                {p.display_name || `User #${p.id}`} (Goal: {p.goal})
+                {p.display_name || `User #${p.id}`} (Goal: {formatEnumLabel(p.goal)})
               </option>
             ))}
           </select>
@@ -193,7 +222,7 @@ export default function DashboardPanel({ initialUserId }) {
           <div className="summary-cards-grid">
             <div className="summary-status-card">
               <h4>Goal & Profile</h4>
-              <p><strong>Goal:</strong> {coachingSummary.goal}</p>
+              <p><strong>Goal:</strong> {formatEnumLabel(coachingSummary.goal)}</p>
               <p><strong>Current Weight:</strong> {coachingSummary.current_weight_kg ? `${coachingSummary.current_weight_kg} kg` : "N/A"}</p>
               <p><strong>Latest Waist:</strong> {coachingSummary.latest_waist_cm ? `${coachingSummary.latest_waist_cm} cm` : "N/A"}</p>
             </div>
@@ -201,7 +230,7 @@ export default function DashboardPanel({ initialUserId }) {
             <div className="summary-status-card">
               <h4>Safety Status</h4>
               <span className={`status-pill ${coachingSummary.safety_status === 'attention_needed' ? 'status-red' : 'status-green'}`}>
-                {coachingSummary.safety_status}
+                {formatEnumLabel(coachingSummary.safety_status)}
               </span>
               <p className="status-sub-text">Safety checks verify weekly rate of change constraints.</p>
             </div>
@@ -230,8 +259,8 @@ export default function DashboardPanel({ initialUserId }) {
                 {safetyFlags.map(flag => (
                   <div key={flag.id} className="flag-alert-item">
                     <div>
-                      <span className="flag-severity">[{flag.severity.toUpperCase()}]</span>
-                      <strong> {flag.flag_type}:</strong> {flag.message}
+                      <span className="flag-severity">[{formatEnumLabel(flag.severity)}]</span>
+                      <strong> {formatEnumLabel(flag.flag_type)}:</strong> {flag.message}
                     </div>
                     <button onClick={() => handleResolveFlag(flag.id)} className="btn-resolve">Resolve</button>
                   </div>
@@ -255,7 +284,7 @@ export default function DashboardPanel({ initialUserId }) {
                   {workouts.slice(0, 10).map((set, i) => (
                     <li key={i}>
                       <strong>{set.exercise_name}:</strong> {set.weight_kg}kg x {set.reps} reps (RIR: {set.rir})
-                      <span className="log-date">{new Date(set.logged_at).toLocaleDateString()}</span>
+                      {formatDate(set.logged_at) && <span className="log-date">{formatDate(set.logged_at)}</span>}
                     </li>
                   ))}
                 </ul>
@@ -269,7 +298,7 @@ export default function DashboardPanel({ initialUserId }) {
                   {meals.slice(0, 10).map((meal, i) => (
                     <li key={i}>
                       <strong>{meal.meal_name}:</strong> {meal.kcal} kcal, {meal.protein_g}g protein
-                      <span className="log-date">{new Date(meal.logged_at).toLocaleDateString()}</span>
+                      {formatDate(meal.logged_at) && <span className="log-date">{formatDate(meal.logged_at)}</span>}
                     </li>
                   ))}
                 </ul>

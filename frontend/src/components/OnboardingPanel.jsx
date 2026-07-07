@@ -1,6 +1,23 @@
 import React, { useState } from 'react';
 import { createProfile, calculateCalories, calculateProtein, logNutritionTarget, logBodyMetric } from '../api/client';
 
+const formatEnumLabel = (val) => {
+  if (!val) return '';
+  const key = String(val).toLowerCase();
+  const mapping = {
+    'attention_needed': 'Attention Needed',
+    'clear': 'Clear',
+    'lean_bulk': 'Lean Bulk',
+    'pain_flag': 'Pain Flag',
+    'medium': 'Medium',
+    'high': 'High',
+    'low': 'Low',
+    'maintain': 'Maintain',
+    'mini_cut': 'Mini Cut'
+  };
+  return mapping[key] || val;
+};
+
 export default function OnboardingPanel({ onProfileCreated }) {
   const [form, setForm] = useState({
     display_name: '',
@@ -120,7 +137,7 @@ export default function OnboardingPanel({ onProfileCreated }) {
           <p>Welcome, <strong>{successData.profile.display_name || `User #${successData.profile.id}`}</strong>!</p>
           <ul>
             <li><strong>User ID:</strong> {successData.profile.id} (Save this to check in!)</li>
-            <li><strong>Goal:</strong> {successData.profile.goal}</li>
+            <li><strong>Goal:</strong> {formatEnumLabel(successData.profile.goal)}</li>
             <li><strong>Starting Calorie Target:</strong> {successData.target_kcal} kcal/day</li>
             <li><strong>Starting Protein Target:</strong> {successData.protein_g} g/day</li>
           </ul>

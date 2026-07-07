@@ -9,6 +9,23 @@ import {
   buildSummary 
 } from '../api/client';
 
+const formatEnumLabel = (val) => {
+  if (!val) return '';
+  const key = String(val).toLowerCase();
+  const mapping = {
+    'attention_needed': 'Attention Needed',
+    'clear': 'Clear',
+    'lean_bulk': 'Lean Bulk',
+    'pain_flag': 'Pain Flag',
+    'medium': 'Medium',
+    'high': 'High',
+    'low': 'Low',
+    'maintain': 'Maintain',
+    'mini_cut': 'Mini Cut'
+  };
+  return mapping[key] || val;
+};
+
 export default function CheckInPanel({ selectedUserId, onCheckInComplete }) {
   const [profiles, setProfiles] = useState([]);
   const [userId, setUserId] = useState(selectedUserId || '');
@@ -130,17 +147,17 @@ export default function CheckInPanel({ selectedUserId, onCheckInComplete }) {
           <h3>Coach Summary for {coachResponse.user_name}</h3>
           <div className="badge-container">
             <span className={`badge ${coachResponse.safety_status === 'attention_needed' ? 'badge-danger' : 'badge-success'}`}>
-              Safety Status: {coachResponse.safety_status}
+              Safety Status: {formatEnumLabel(coachResponse.safety_status)}
             </span>
           </div>
           
           <div className="summary-section">
-            <p><strong>Goal:</strong> {coachResponse.goal}</p>
+            <p><strong>Goal:</strong> {formatEnumLabel(coachResponse.goal)}</p>
             <p><strong>Calorie Target:</strong> {coachResponse.calorie_target_kcal} kcal</p>
             <p><strong>Protein Target:</strong> {coachResponse.protein_target_g} g</p>
-            <p><strong>Progress Trend:</strong> {coachResponse.progress_status}</p>
-            <p><strong>Nutrition Target Status:</strong> {coachResponse.nutrition_status}</p>
-            <p><strong>Training Activity:</strong> {coachResponse.training_status}</p>
+            <p><strong>Progress Trend:</strong> {formatEnumLabel(coachResponse.progress_status)}</p>
+            <p><strong>Nutrition Target Status:</strong> {formatEnumLabel(coachResponse.nutrition_status)}</p>
+            <p><strong>Training Activity:</strong> {formatEnumLabel(coachResponse.training_status)}</p>
           </div>
 
           <h4>Next Actions:</h4>
@@ -161,7 +178,7 @@ export default function CheckInPanel({ selectedUserId, onCheckInComplete }) {
                 <option value="">-- Choose User --</option>
                 {profiles.map(p => (
                   <option key={p.id} value={p.id}>
-                    {p.display_name || `User #${p.id}`} (Goal: {p.goal})
+                    {p.display_name || `User #${p.id}`} (Goal: {formatEnumLabel(p.goal)})
                   </option>
                 ))}
               </select>

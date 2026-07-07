@@ -25,8 +25,8 @@ export default function DemoSeedPanel({ onDemoCreated }) {
 
   return (
     <div className="card demo-seed-panel">
-      <h2>Demo Profile</h2>
-      <p>Create a local demo user with body, workout, meal, and safety data.</p>
+      <h2>Reviewer Quickstart</h2>
+      <p>Create a sample local user with body, workout, meal, nutrition, and safety data so reviewers can explore the dashboard immediately.</p>
       
       <button 
         onClick={handleCreateDemo} 
@@ -34,14 +34,17 @@ export default function DemoSeedPanel({ onDemoCreated }) {
         className="btn-secondary"
         style={{ width: '100%', padding: '0.75rem', marginBottom: '1rem' }}
       >
-        {loading ? 'Seeding Demo Data...' : 'Create Demo Profile'}
+        {loading ? 'Seeding Demo Data...' : 'Create Demo User'}
       </button>
 
       {error && <p className="error">Error: {error}</p>}
 
       {demoResult && (
         <div className="result-block">
-          <h3>Success: Demo Profile Seeded</h3>
+          <h3>Success: Demo user created and loaded.</h3>
+          <p style={{ fontSize: '0.9rem', marginBottom: '1rem', color: 'var(--text-secondary)' }}>
+            Open the Dashboard to review seeded progress, meals, and safety flags.
+          </p>
           <ul>
             <li><strong>Profile ID:</strong> {demoResult.profile.id}</li>
             <li><strong>Display Name:</strong> {demoResult.profile.display_name}</li>

@@ -218,11 +218,9 @@ export default function MealHelperPanel({ initialUserId }) {
                 <h5>{meal.name}</h5>
                 <div className="suggestion-macros">
                   <span>{meal.kcal} kcal</span>
-                  <span>{meal.protein}g P</span>
-                  <span>{meal.carbs || 0}g C</span>
-                  <span>{meal.fat || 0}g F</span>
+                  <span>{meal.protein_g ?? meal.protein}g P</span>
                 </div>
-                {meal.recipe && <p className="suggestion-recipe"><strong>Recipe:</strong> {meal.recipe}</p>}
+                {(meal.description || meal.recipe) && <p className="suggestion-recipe"><strong>Description:</strong> {meal.description || meal.recipe}</p>}
                 {meal.equipment && <p className="suggestion-meta"><strong>Equipment:</strong> {meal.equipment.join(', ')}</p>}
               </div>
             ))}
